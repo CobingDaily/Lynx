@@ -26,19 +26,32 @@ let interpret input =
         Printf.printf "Error: %s\n\n" (Printexc.to_string e)
 ;;
 
+(*
 let interpret_inputs (list: string list) =
     List.iter (fun x -> interpret x) list
+;;
+*)
+
+let log_inputs (list: string list) =
+    List.iter (fun x -> 
+        print_endline ("------------------------------");
+        test x; 
+        print_endline "";
+        interpret x;)
+    list
 ;;
 
 let () = 
     (* test_inputs ["3.14"; ".5"; "3."; "."]; *)
     test_inputs ["let x = 5 in let y = 3 in x + y * 3"];
+    test_inputs ["a == b"; "a == b == c"; "a==b"];
 
     let calculations = [
         "4 + 2 * 3 - 6 / 3 + 4";
         "2.5 + 2 * 3";
-        "2 + 2 * 3";
+        "2 + 2 == 4";
+        "2 == 3";
         "(1 / 1000.0) * 500";
     ] in 
-    interpret_inputs calculations
+    log_inputs calculations;
 ;;

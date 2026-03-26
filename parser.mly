@@ -8,9 +8,11 @@
 %token <string> IDENT
 %token PLUS MINUS TIMES OVER
 %token LPAREN RPAREN
+%token EQEQ
 %token LET EQUALS IN
 %token EOF
 
+%left EQEQ
 %left PLUS MINUS
 %left TIMES OVER
 
@@ -36,8 +38,9 @@ expr:
         { BinOp (Mul, left, right) }
     | left = expr; OVER; right = expr
         { BinOp (Div, left, right) }
+    | left = expr; EQEQ; right = expr
+        { BinOp (Equals, left, right) }
     | LPAREN; content = expr; RPAREN
         { content }
     | LET; name = IDENT; EQUALS; value = expr; IN; body = expr
         { Let (name, value, body) }
-

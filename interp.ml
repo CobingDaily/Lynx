@@ -17,7 +17,10 @@ let rec eval = function
              | Add -> eval_binop ( + ) ( +. ) left right
              | Sub -> eval_binop ( - ) ( -. ) left right
              | Mul -> eval_binop ( * ) ( *. ) left right 
-             | Div -> eval_binop ( / ) ( /. ) left right)
+             | Div -> eval_binop ( / ) ( /. ) left right
+             | Equals -> 
+                     if left = right then (IntVal 1)
+                     else (IntVal 0))
 
 
 and eval_binop op_int op_float left right =

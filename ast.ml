@@ -4,6 +4,7 @@ type binop =
     | Sub
     | Mul
     | Div
+    | Equals
 ;;
 
 type expr =
@@ -15,25 +16,18 @@ type expr =
 ;;
 
 let rec string_of_expr = function
+    | Var x -> x
     | Int n -> Printf.sprintf "%d" n
     | Float n -> Printf.sprintf "%ff" n
-    | BinOp (Add, left, right) ->
+    | BinOp (op, left, right) ->
             let l_expr = string_of_expr left in
             let r_expr = string_of_expr right in
-            Printf.sprintf "(%s + %s)" l_expr r_expr
-    | BinOp (Sub, left, right) ->
-            let l_expr = string_of_expr left in
-            let r_expr = string_of_expr right in
-            Printf.sprintf "(%s - %s)" l_expr r_expr
-    | BinOp (Mul, left, right) ->
-            let l_expr = string_of_expr left in
-            let r_expr = string_of_expr right in
-            Printf.sprintf "(%s * %s)" l_expr r_expr
-    | BinOp (Div, left, right) ->
-            let l_expr = string_of_expr left in
-            let r_expr = string_of_expr right in
-            Printf.sprintf "(%s / %s)" l_expr r_expr
-    | Var x -> x
+            (match op with
+                | Add -> Printf.sprintf "(%s + %s)" l_expr r_expr
+                | Sub -> Printf.sprintf "(%s - %s)" l_expr r_expr
+                | Mul -> Printf.sprintf "(%s * %s)" l_expr r_expr
+                | Div -> Printf.sprintf "(%s / %s)" l_expr r_expr
+                | Equals -> Printf.sprintf "(%s == %s)" l_expr r_expr)
     | Let (name, value, body) ->
             let value = string_of_expr value in
             let body = string_of_expr body in

@@ -13,6 +13,7 @@ rule token = parse
     | digit+ as num                 { INT (int_of_string num) }
     | "let"                         { LET }
     | "in"                          { IN }
+    | "=="                          { EQEQ }
     | alpha alphanum* as id         { IDENT id }
     | '+'                           { PLUS }
     | '-'                           { MINUS }
