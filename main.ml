@@ -13,7 +13,7 @@ let test input =
         Printf.printf "Error: %s\n\n" (Printexc.to_string e)
 ;;
 
-let test_inputs (list: string list) =
+let _test_inputs (list: string list) =
     List.iter (fun x -> test x) list 
 ;;
 
@@ -26,13 +26,11 @@ let interpret input =
         Printf.printf "Error: %s\n\n" (Printexc.to_string e)
 ;;
 
-(*
-let interpret_inputs (list: string list) =
+let _interpret_inputs (list: string list) =
     List.iter (fun x -> interpret x) list
 ;;
-*)
 
-let log_inputs (list: string list) =
+let _log_inputs (list: string list) =
     List.iter (fun x -> 
         print_endline ("------------------------------");
         test x; 
@@ -41,14 +39,20 @@ let log_inputs (list: string list) =
     list
 ;;
 
-let () = 
-    (* test_inputs ["3.14"; ".5"; "3."; "."]; *)
-    test_inputs ["let x = 5 in let y = 3 in x + y * 3"];
-    test_inputs ["a == b"; "a == b == c"; "a==b"];
+let quit_input = function
+    | "q" 
+    | "Q" 
+    | "quit"
+    | "exit" -> true
+    | _ -> false
 
-    let calculations = [
-        "if (5*5 == 25) then (42 * 3.14) else 0.0";
-        "if (5*5 == 24) then (42 * 3.14) else 0.0"
-    ] in 
-    log_inputs calculations;
+
+let rec repl_loop () =
+    Printf.printf ">>> ";
+    let user_input = read_line () in
+    print_endline "";
+    if quit_input user_input then ()
+    else (interpret user_input; repl_loop ();)
 ;;
+
+let () = repl_loop ();;
