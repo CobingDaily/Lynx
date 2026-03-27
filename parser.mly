@@ -6,8 +6,11 @@
 %token <int> INT
 %token <float> FLOAT
 %token <bool> BOOL
+%token <char> CHAR
+%token <string> STRING
 %token <string> IDENT
 %token PLUS MINUS TIMES OVER
+%token DQUOTE
 %token LPAREN RPAREN
 %token EQEQ
 %token LET EQUALS IN
@@ -32,6 +35,10 @@ expr:
         { Value (Float n) }
     | b = BOOL
         { Value (Bool b) }
+    | c = CHAR
+        { Value (Char c) }
+    | s = STRING
+        { Value (String s) }
     | x = IDENT
         { Var x }
     | left = expr; PLUS; right = expr

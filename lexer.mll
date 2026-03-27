@@ -7,10 +7,23 @@ let alpha = ['a'-'z' 'A'-'Z']
 let alphanum = alpha | digit | '_'
 let whitespace = [' ' '\t' '\n']
 
+let not_quote = [^ '"'] | "\\\""
+
+
 rule token = parse
     | whitespace+                   { token lexbuf }
     | digit+ '.' digit+ as numf     { FLOAT (float_of_string numf) }
     | digit+ as num                 { INT (int_of_string num) }
+    | '\'' (_ as c) '\''            { CHAR (c)}
+    | '\'' '\\' (_ as c) '\''       { CHAR (match c with
+                                            | 'n' -> '\n'
+                                            | 'r' -> '\r'
+                                            | 't' -> '\t'
+                                            | '\\' -> '\\'
+                                            | _ -> failwith (Printf.sprintf 
+                                                    "unknown escape \\%c" 
+                                                    c))}
+    | '\"' (not_quote* as str) '\"' { STRING (str) }
     | "let"                         { LET }
     | "in"                          { IN }
     | "=="                          { EQEQ }

@@ -11,6 +11,7 @@ type value =
     | Int of int
     | Float of float
     | Bool of bool
+    | Char of char
     | String of string
 
 type expr =
@@ -28,7 +29,8 @@ let rec string_of_expr = function
             | Int    n -> Printf.sprintf "%d" n
             | Float  n -> Printf.sprintf "%ff" n
             | Bool   b -> if b then "true" else "false"
-            | String s -> s)
+            | Char   c -> Printf.sprintf "%C" c
+            | String s -> Printf.sprintf "%S" s)
     | BinOp (op, left, right) ->
             let l_expr = string_of_expr left in
             let r_expr = string_of_expr right in

@@ -14,18 +14,20 @@ let rec eval = function
     | BinOp (op, left, right) ->
             let left = eval left in
             let right = eval right in
+            let eval_binop = eval_binop left right in
             (match op with
-             | Add -> eval_binop ( + ) ( +. ) left right
-             | Sub -> eval_binop ( - ) ( -. ) left right
-             | Mul -> eval_binop ( * ) ( *. ) left right 
-             | Div -> eval_binop ( / ) ( /. ) left right
+             | Add -> eval_binop ~op_i:( + ) ~op_f:( +. ) ~op_s:( ^ ) ()
+             | Sub -> eval_binop ~op_i:( - ) ~op_f:( -. ) ()
+             | Mul -> eval_binop ~op_i:( * ) ~op_f:( *. ) ()
+             | Div -> eval_binop ~op_i:( / ) ~op_f:( /. ) ()
              | Equals -> Bool (left = right))
 
 
-and eval_binop op_int op_float left right =
-    match (left, right) with
-    | Int   x, Int   y -> Int (op_int x y)
-    | Float x, Float y -> Float (op_float x y)
+and eval_binop left right ?op_i ?op_f ?op_s () =
+    match (left, right, op_i, op_f, op_s) with
+    | Int x, Int y, Some op, _, _ -> Int (op x y)
+    | Float x, Float y, _, Some op, _ -> Float (op x y)
+    | String s1, String s2, _, _, Some op -> String (op s1 s2)
     | _ -> failwith (Printf.sprintf "Cannot infer type")
 ;;
 
@@ -35,6 +37,7 @@ let interpret expr =
     | Int n -> Printf.sprintf "%i" n
     | Float n -> Printf.sprintf "%f" n
     | Bool b -> if b then "true" else "false"
+    | Char c -> Printf.sprintf "%C" c
     | String s -> Printf.sprintf "%S" s
 ;;
 
