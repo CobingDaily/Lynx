@@ -1,30 +1,34 @@
-type unop =
-    | UnaryMinus
-;;
+module StringMap = Map.Make(String)
 
-type binop = 
+type env = value StringMap.t list 
+
+and unop =
+    | UnaryMinus
+
+and binop = 
     | Add
     | Sub
     | Mul
     | Div
     | Equals
-;;
 
-type value =
+and value =
     | Int of int
     | Float of float
     | Bool of bool
     | Char of char
     | String of string
-;;
+    | Closure of string * expr * env (* param, body, captured env*)
 
-type expr =
+and expr =
     | Value of value
     | BinOp of binop * expr * expr  (* op, left, right *)
     | UnOp of unop * expr           (* op, expr *)
-    | Var of string
+    | Var of string                 (* variable name *)
     | Let of string * expr * expr   (* variable name, value, body*)
     | IfElse of expr * expr * expr  (* condition, then_expr, other_expr *)
+    | Func of string * expr         (* param name -> expr *)
+    | Apply of expr * expr          (* func name, argument *)
 ;;
 
 let rec string_of_expr = function
@@ -35,7 +39,8 @@ let rec string_of_expr = function
             | Float  n -> Printf.sprintf "%ff" n
             | Bool   b -> if b then "true" else "false"
             | Char   c -> Printf.sprintf "%C" c
-            | String s -> Printf.sprintf "%S" s)
+            | String s -> Printf.sprintf "%S" s
+            | Closure _ -> "closure")
     | UnOp (op, expr) ->
             let s = string_of_expr expr in
             (match op with
@@ -58,4 +63,11 @@ let rec string_of_expr = function
             let then_s = string_of_expr then_expr in
             let other_s = string_of_expr other_expr in
             Printf.sprintf "(if %s then %s else %s)" condition then_s other_s
+    | Func (left, right) ->
+            let right = string_of_expr right in
+            Printf.sprintf "(%s -> %s)" left right
+    | Apply (func_expr, arg_expr) ->
+            let f = string_of_expr func_expr in
+            let arg = string_of_expr arg_expr in
+            Printf.sprintf "(%s %s)" f arg
 ;;

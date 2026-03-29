@@ -1,7 +1,6 @@
 open Ast
 
 module StringMap = Map.Make(String)
-type env = value StringMap.t list (* stack of (string -> value) maps*)
 let empty_env = [StringMap.empty]
 
 let define name value = function
@@ -25,6 +24,15 @@ let rec eval env = function
             let value = eval env expr in
             let env' = define name value env in
             (eval env' body)
+    | Func (param_name, body) -> Closure (param_name, body, env)
+    | Apply (f_expr, arg_expr) ->
+            let func = eval env f_expr in
+            let arg = eval env arg_expr in
+            (match func with
+             | Closure (param_name, body, closed_env) ->
+                     let env' = define param_name arg closed_env in
+                     eval env' body
+             | _ -> failwith "Not a function")
     | IfElse (cond_expr, then_expr, other_expr) ->
             (match (eval env cond_expr) with
             | Bool false
@@ -73,15 +81,20 @@ let rec eval env = function
                        | String a, String b -> Bool (a = b)
                        | _ -> failwith "incompatible types for comparison"))
 ;;
-        
 
-let interpret expr =
-    let value = eval empty_env expr in
-    match value with
+let string_of_value = function
     | Int n -> Printf.sprintf "%i" n
     | Float n -> Printf.sprintf "%f" n
     | Bool b -> if b then "true" else "false"
     | Char c -> Printf.sprintf "%C" c
     | String s -> Printf.sprintf "%S" s
+    | Closure (param_name, body, _) ->
+            let s = string_of_expr body in
+            Printf.sprintf "%s -> %s" param_name s
+;;
+        
+let interpret expr =
+    let value = eval empty_env expr in
+    string_of_value value
 ;;
 

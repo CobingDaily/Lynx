@@ -12,11 +12,12 @@
 %token PLUS MINUS TIMES OVER
 %token LPAREN RPAREN
 %token EQEQ
+%token RARROW
 %token LET EQUALS IN
 %token IF THEN ELSE
 %token EOF
 
-%left EQEQ
+%left EQEQ RARROW
 %left PLUS MINUS
 %left TIMES OVER
 
@@ -28,18 +29,10 @@ main:
     | e = expr; EOF { e }
     
 expr:
-    | n = INT 
-        { Value (Int n) }
-    | n = FLOAT
-        { Value (Float n) }
-    | b = BOOL
-        { Value (Bool b) }
-    | c = CHAR
-        { Value (Char c) }
-    | s = STRING
-        { Value (String s) }
-    | x = IDENT
-        { Var x }
+    | e = app_expr 
+        { e }
+    | p = IDENT; RARROW; right = expr
+        { Func (p, right) }
     | MINUS; operand = expr
         { UnOp (UnaryMinus, operand) }
     | left = expr; PLUS; right = expr
@@ -52,9 +45,24 @@ expr:
         { BinOp (Div, left, right) }
     | left = expr; EQEQ; right = expr
         { BinOp (Equals, left, right) }
-    | LPAREN; content = expr; RPAREN
-        { content }
     | LET; name = IDENT; EQUALS; value = expr; IN; body = expr
         { Let (name, value, body) }
     | IF; cond = expr; THEN; then_expr = expr; ELSE; other_expr = expr
-        { IfElse (cond, then_expr, other_expr)}
+        { IfElse (cond, then_expr, other_expr) }
+
+app_expr: 
+    | e = atom_expr 
+        { e }
+    | func = app_expr; arg = atom_expr
+        { Apply (func, arg) }
+
+atom_expr:
+    | n = INT       { Value (Int n) }
+    | n = FLOAT     { Value (Float n) }
+    | b = BOOL      { Value (Bool b) }
+    | c = CHAR      { Value (Char c) }
+    | s = STRING    { Value (String s) }
+    | x = IDENT     { Var x }
+    | LPAREN; content = expr; RPAREN
+        { content }
+

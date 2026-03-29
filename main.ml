@@ -6,10 +6,12 @@ let parse (s: string) : Ast.expr =
 
 let interpret input =
     try
-        let result = Interp.interpret @@ parse input in
+        let ast = parse input in
+        let result = Interp.interpret ast in
+        (* print_endline (Ast.string_of_expr ast); *)
         print_endline result
     with e ->
-        Printf.printf "Error: %s\n\n" (Printexc.to_string e)
+        Printf.printf "Error: %s\n" (Printexc.to_string e)
 ;;
 
 let quit_input = function
