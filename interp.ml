@@ -3,20 +3,6 @@ open Ast
 module StringMap = Map.Make(String)
 let empty_env = [StringMap.empty]
 
-let define name value = function
-    | [] -> failwith "no scope"
-    | scope :: rest -> (StringMap.add name value scope) :: rest
-;;
-
-let rec lookup name = function
-    | [] -> failwith (Printf.sprintf "Unknown name %s" name)
-    | scope :: rest ->
-            (match (StringMap.find_opt name scope) with
-            | Some v -> v
-            | None -> lookup name rest)
-;;
-
-
 let rec eval env = function
     | Value value -> value
     | Var name -> lookup name env
@@ -24,7 +10,8 @@ let rec eval env = function
             let value = eval env expr in
             let env' = define name value env in
             (eval env' body)
-    | Func (param_name, body) -> Closure (param_name, body, env)
+    | Func (param_name, body) -> 
+            Closure (param_name, body, env)
     | IfElse (cond_expr, then_expr, other_expr) ->
             (match (eval env cond_expr) with
             | Bool false
@@ -82,17 +69,6 @@ let rec eval env = function
                      | _ -> failwith "Not a function"))
 ;;
 
-let string_of_value = function
-    | Int n -> Printf.sprintf "%i" n
-    | Float n -> Printf.sprintf "%f" n
-    | Bool b -> if b then "true" else "false"
-    | Char c -> Printf.sprintf "%C" c
-    | String s -> Printf.sprintf "%S" s
-    | Closure (param_name, body, _) ->
-            let s = string_of_expr body in
-            Printf.sprintf "%s -> %s" param_name s
-;;
-        
 let interpret expr =
     let value = eval empty_env expr in
     string_of_value value

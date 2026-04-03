@@ -6,14 +6,14 @@
     add_squares 3 4
 25
 
->>> ((x -> y -> ((x -> y -> x + y) ((x -> x*x) x)  ((x -> x*x) y))) 3 4)
-25
-
 >>> ((x -> y -> ((x -> x*x) x + (x -> x*x) y)) 3 4)
 25
 
 >>> ((x -> y -> x*x + y*y) 3 4)
 25
+
+>>> ((x -> y -> x*x + y*y) 3)
+y -> ((3 * 3) + (y * y)
 ```
 ### Let and If Expressions:
 ```

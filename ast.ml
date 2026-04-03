@@ -31,23 +31,49 @@ and expr =
     | Func of string * expr         (* param name -> expr *)
 ;;
 
-let rec string_of_expr = function
-    | Var x -> x
-    | Value v ->
-        (match v with
-            | Int    n -> Printf.sprintf "%d" n
-            | Float  n -> Printf.sprintf "%ff" n
-            | Bool   b -> if b then "true" else "false"
-            | Char   c -> Printf.sprintf "%C" c
-            | String s -> Printf.sprintf "%S" s
-            | Closure _ -> "closure")
+let rec define name value = function
+    | [] -> failwith "no scope"
+    | scope :: rest -> (StringMap.add name value scope) :: rest
+
+
+and lookup_opt name = function
+    | [] -> None
+    | scope :: rest ->
+            (match (StringMap.find_opt name scope) with
+            | Some v -> Some v
+            | None -> lookup_opt name rest)
+
+
+and lookup name env = 
+    match (lookup_opt name env) with
+    | None -> failwith (Printf.sprintf "Unknown name %s" name)
+    | Some v -> v
+
+
+and string_of_value = function
+    | Int n -> Printf.sprintf "%i" n
+    | Float n -> Printf.sprintf "%f" n
+    | Bool b -> if b then "true" else "false"
+    | Char c -> Printf.sprintf "%C" c
+    | String s -> Printf.sprintf "%S" s
+    | Closure (param_name, body, env) ->
+            let s = string_of_expr env body in
+            Printf.sprintf "%s -> %s" param_name s
+        
+
+and string_of_expr env = function
+    | Value v -> string_of_value v
+    | Var name -> (match (lookup_opt name env) with
+                   | None -> name
+                   | Some v -> string_of_value v)
+
     | UnOp (op, expr) ->
-            let s = string_of_expr expr in
+            let s = string_of_expr env expr in
             (match op with
                 | UnaryMinus -> Printf.sprintf "(-%s)" s)
     | BinOp (op, left, right) ->
-            let l_expr = string_of_expr left in
-            let r_expr = string_of_expr right in
+            let l_expr = string_of_expr env left in
+            let r_expr = string_of_expr env right in
             (match op with
                 | Add    -> Printf.sprintf "(%s + %s)" l_expr r_expr
                 | Sub    -> Printf.sprintf "(%s - %s)" l_expr r_expr
@@ -56,15 +82,23 @@ let rec string_of_expr = function
                 | Equals -> Printf.sprintf "(%s == %s)" l_expr r_expr
                 | Apply  -> Printf.sprintf "(%s %s)" l_expr r_expr)
     | Let (name, value, body) ->
-            let value = string_of_expr value in
-            let body = string_of_expr body in
+            let value = string_of_expr env value in
+            let body = string_of_expr env body in
             Printf.sprintf "(let %s = %s in %s)" name value body
     | IfElse (condition_expr, then_expr, other_expr) ->
-            let condition = string_of_expr condition_expr in
-            let then_s = string_of_expr then_expr in
-            let other_s = string_of_expr other_expr in
+            let condition = string_of_expr env condition_expr in
+            let then_s = string_of_expr env then_expr in
+            let other_s = string_of_expr env other_expr in
             Printf.sprintf "(if %s then %s else %s)" condition then_s other_s
     | Func (left, right) ->
-            let right = string_of_expr right in
+            let right = string_of_expr env right in
             Printf.sprintf "(%s -> %s)" left right
 ;;
+
+(* let rec print_env = function
+    | [] -> ()
+    | scope :: rest -> 
+            let f = (fun n v -> Printf.printf "%s <-> %s\n" n (string_of_value v)) in
+            StringMap.iter f scope;
+            print_env rest
+*)
