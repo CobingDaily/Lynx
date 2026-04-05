@@ -1,10 +1,10 @@
 repl:
 	dune build
-	./_build/default/repl.exe
+	./_build/default/src/repl.exe
 
 code:
 	dune build
-	./_build/default/main.exe
+	./_build/default/src/main.exe
 
 clean:
 	rm -rf _build/
