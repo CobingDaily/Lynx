@@ -26,7 +26,7 @@ and expr =
     | BinOp of binop * expr * expr  (* op, left, right *)
     | UnOp of unop * expr           (* op, expr *)
     | Var of string                 (* variable name *)
-    | Let of string * expr * expr   (* variable name, value, body*)
+    | Let of string * expr * expr   (* variable name, value, body *)
     | IfElse of expr * expr * expr  (* condition, then_expr, other_expr *)
     | Func of string * expr         (* param name -> expr *)
 ;;

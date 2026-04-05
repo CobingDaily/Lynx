@@ -3,5 +3,5 @@
 
 (ocamllex lexer)
 
-(executable
- (name main))
+(executables
+ (names repl main))
