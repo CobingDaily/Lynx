@@ -27,6 +27,10 @@ rule token = parse
     | "let"                         { LET }
     | "in"                          { IN }
     | "=="                          { EQEQ }
+    | ">"                           { GT }
+    | "<"                           { LT }
+    | ">="                          { GE }
+    | "<="                          { LE }
     | "->"                          { RARROW }
     | "|>"                          { PIPE }
     | "if"                          { IF }

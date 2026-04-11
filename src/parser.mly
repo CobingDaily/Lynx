@@ -11,7 +11,7 @@
 %token <string> IDENT
 %token PLUS MINUS TIMES OVER
 %token LPAREN RPAREN
-%token EQEQ
+%token EQEQ GT LT GE LE
 %token RARROW PIPE
 %token LET EQUALS IN
 %token IF THEN ELSE
@@ -40,6 +40,14 @@ eq_expr:
     | e = add_expr { e }
     | left = eq_expr; EQEQ; right = add_expr
         { BinOp (Equals, left, right) }
+    | left = eq_expr; GT; right = add_expr
+        { BinOp (GreaterThan, left, right) }
+    | left = eq_expr; LT; right = add_expr
+        { BinOp (LessThan, left, right) }
+    | left = eq_expr; GE; right = add_expr
+        { BinOp (GreaterEqual, left, right) }
+    | left = eq_expr; LE; right = add_expr
+        { BinOp (LessEqual, left, right) }
 
 add_expr:
     | e = mul_expr { e }

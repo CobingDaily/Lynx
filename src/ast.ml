@@ -11,6 +11,10 @@ and binop =
     | Mul
     | Div
     | Equals
+    | GreaterThan
+    | LessThan
+    | GreaterEqual
+    | LessEqual
 
 and value =
     | Int of int
@@ -79,7 +83,11 @@ and string_of_expr env = function
                 | Sub    -> Printf.sprintf "(%s - %s)" l_expr r_expr
                 | Mul    -> Printf.sprintf "(%s * %s)" l_expr r_expr
                 | Div    -> Printf.sprintf "(%s / %s)" l_expr r_expr
-                | Equals -> Printf.sprintf "(%s == %s)" l_expr r_expr)
+                | Equals       -> Printf.sprintf "(%s == %s)" l_expr r_expr
+                | GreaterThan  -> Printf.sprintf "(%s > %s)" l_expr r_expr
+                | LessThan     -> Printf.sprintf "(%s < %s)" l_expr r_expr
+                | GreaterEqual -> Printf.sprintf "(%s >= %s)" l_expr r_expr
+                | LessEqual    -> Printf.sprintf "(%s <= %s)" l_expr r_expr)
     | Let (name, value, body) ->
             let value = string_of_expr env value in
             let body = string_of_expr env body in

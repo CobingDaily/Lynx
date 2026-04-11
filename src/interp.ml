@@ -39,6 +39,42 @@ let are_values_equal = function
     | _ -> failwith "incompatible types for comparison"
 ;;
 
+let is_greater_than = function
+    | Int a, Int b       -> Bool (a > b)
+    | Float a, Float b   -> Bool (a > b)
+    | Bool a, Bool b     -> Bool (a > b)
+    | Char a, Char b     -> Bool (a > b)
+    | String a, String b -> Bool (a > b)
+    | _ -> failwith "incompatible types for comparison"
+;;
+
+let is_less_than = function
+    | Int a, Int b       -> Bool (a < b)
+    | Float a, Float b   -> Bool (a < b)
+    | Bool a, Bool b     -> Bool (a < b)
+    | Char a, Char b     -> Bool (a < b)
+    | String a, String b -> Bool (a < b)
+    | _ -> failwith "incompatible types for comparison"
+;;
+
+let is_greater_equal = function
+    | Int a, Int b       -> Bool (a >= b)
+    | Float a, Float b   -> Bool (a >= b)
+    | Bool a, Bool b     -> Bool (a >= b)
+    | Char a, Char b     -> Bool (a >= b)
+    | String a, String b -> Bool (a >= b)
+    | _ -> failwith "incompatible types for comparison"
+;;
+
+let is_less_equal = function
+    | Int a, Int b       -> Bool (a <= b)
+    | Float a, Float b   -> Bool (a <= b)
+    | Bool a, Bool b     -> Bool (a <= b)
+    | Char a, Char b     -> Bool (a <= b)
+    | String a, String b -> Bool (a <= b)
+    | _ -> failwith "incompatible types for comparison"
+;;
+
 let do_negate = function
     | Int x   -> Int (-x)
     | Float x -> Float (-.x)
@@ -85,7 +121,11 @@ let rec do_apply = function
              | Sub    -> do_sub 
              | Mul    -> do_mul 
              | Div    -> do_div 
-             | Equals -> are_values_equal 
+             | Equals       -> are_values_equal
+             | GreaterThan  -> is_greater_than
+             | LessThan     -> is_less_than
+             | GreaterEqual -> is_greater_equal
+             | LessEqual    -> is_less_equal
             end in
             do_binop (left_value, right_value)
      | Apply (func_expr, arg_expr) -> 
