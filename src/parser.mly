@@ -34,7 +34,7 @@ expr:
 pipe_expr:
     | e = eq_expr { e }
     | left = pipe_expr; PIPE; right = eq_expr
-        { BinOp (Apply, right, left) }
+        { Apply (right, left) }
 
 eq_expr:
     | e = add_expr { e }
@@ -60,7 +60,7 @@ mul_expr:
 app_expr:
     | e = atom_expr { e }
     | func = app_expr; arg = atom_expr
-        { BinOp (Apply, func, arg) }
+        { Apply (func, arg) }
 
 atom_expr:
     | n = INT       { Value (Int n) }

@@ -11,7 +11,6 @@ and binop =
     | Mul
     | Div
     | Equals
-    | Apply
 
 and value =
     | Int of int
@@ -29,6 +28,7 @@ and expr =
     | Let of string * expr * expr   (* variable name, value, body *)
     | IfElse of expr * expr * expr  (* condition, then_expr, other_expr *)
     | Func of string * expr         (* param name -> expr *)
+    | Apply of expr * expr          (* function_expr argument_expr *)
 ;;
 
 let rec define name value = function
@@ -79,8 +79,7 @@ and string_of_expr env = function
                 | Sub    -> Printf.sprintf "(%s - %s)" l_expr r_expr
                 | Mul    -> Printf.sprintf "(%s * %s)" l_expr r_expr
                 | Div    -> Printf.sprintf "(%s / %s)" l_expr r_expr
-                | Equals -> Printf.sprintf "(%s == %s)" l_expr r_expr
-                | Apply  -> Printf.sprintf "(%s %s)" l_expr r_expr)
+                | Equals -> Printf.sprintf "(%s == %s)" l_expr r_expr)
     | Let (name, value, body) ->
             let value = string_of_expr env value in
             let body = string_of_expr env body in
@@ -93,6 +92,10 @@ and string_of_expr env = function
     | Func (left, right) ->
             let right = string_of_expr env right in
             Printf.sprintf "(%s -> %s)" left right
+    | Apply (function_expr, argument_expr) ->
+            let f = string_of_expr env function_expr in
+            let x = string_of_expr env argument_expr in
+            Printf.sprintf "(%s %s)" f x
 ;;
 
 (* let rec print_env = function
