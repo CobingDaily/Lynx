@@ -98,40 +98,40 @@ let rec do_apply = function
 
 and eval env = function
   | Value value -> value
-    | Var name -> lookup name env
-    | Let (name, expr, body_expr) -> 
-        let value = eval env expr in
-        let env' = define name value env in
-        (eval env' body_expr)
-    | Func (param_name, body_expr) -> 
-        Closure (param_name, body_expr, env)
-    | IfElse (cond_expr, then_expr, else_expr) ->
-        let condition_value = eval env cond_expr in
-        if (is_true condition_value)
-        then eval env then_expr
-                else eval env else_expr
-    | UnOp (UnaryMinus, expr) ->
-        let value_to_negate = eval env expr in
-        do_negate value_to_negate
-    | BinOp (op, left_expr, right_expr) ->
-        let left_value = eval env left_expr in
-        let right_value = eval env right_expr in
-        let do_binop = begin match op with
-             | Add    -> do_add 
-             | Sub    -> do_sub 
-             | Mul    -> do_mul 
-             | Div    -> do_div 
-             | Equals       -> are_values_equal
-             | GreaterThan  -> is_greater_than
-             | LessThan     -> is_less_than
-             | GreaterEqual -> is_greater_equal
-             | LessEqual    -> is_less_equal
-        end in
-        do_binop (left_value, right_value)
-             | Apply (func_expr, arg_expr) -> 
-                 let func_value = eval env func_expr in
-                 let arg_value = eval env arg_expr in
-                 do_apply (func_value, arg_value)
+  | Var name -> lookup name env
+  | Let (name, expr, body_expr) -> 
+      let value = eval env expr in
+      let env' = define name value env in
+      (eval env' body_expr)
+  | Func (param_name, body_expr) -> 
+      Closure (param_name, body_expr, env)
+  | Apply (func_expr, arg_expr) -> 
+     let func_value = eval env func_expr in
+     let arg_value = eval env arg_expr in
+     do_apply (func_value, arg_value)
+  | IfElse (cond_expr, then_expr, else_expr) ->
+      let condition_value = eval env cond_expr in
+      if (is_true condition_value)
+      then eval env then_expr
+              else eval env else_expr
+  | UnOp (UnaryMinus, expr) ->
+      let value_to_negate = eval env expr in
+      do_negate value_to_negate
+  | BinOp (op, left_expr, right_expr) ->
+      let left_value = eval env left_expr in
+      let right_value = eval env right_expr in
+      let do_binop = begin match op with
+           | Add    -> do_add 
+           | Sub    -> do_sub 
+           | Mul    -> do_mul 
+           | Div    -> do_div 
+           | Equals       -> are_values_equal
+           | GreaterThan  -> is_greater_than
+           | LessThan     -> is_less_than
+           | GreaterEqual -> is_greater_equal
+           | LessEqual    -> is_less_equal
+      end in
+      do_binop (left_value, right_value)
 ;;
 
 let interpret expr =

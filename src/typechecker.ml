@@ -1,18 +1,16 @@
 open Ast
 module StringMap = Map.Make(String)
 
-
 type type' =
     | IntT
     | FloatT
     | BoolT
     | CharT
     | StringT
-    (* | FunctionT of type' * type' (* a function type is type' -> type' *) *)
-;;
+    | ClosureT
 
+and type_env = type' StringMap.t list  
 
-type type_env = type' StringMap.t list  
 let empty_type_env: type_env = [StringMap.empty]
 
 let define_type name (t : type') = function
@@ -38,8 +36,7 @@ let type_of_value = function
     | Bool _    -> BoolT
     | Char _    -> CharT
     | String _  -> StringT
-    | Closure _ -> failwith "not implemented"
-    (* | Closure _ -> FunctionT *)
+    | Closure _ -> ClosureT
 ;;
 
 let tc_arithmetic = function
@@ -53,7 +50,7 @@ let tc_arithmetic = function
         | Div -> "division"
         | _ -> fail_tc "unexpected arithmetic operation"
         in
-        fail_tc ("Incompatible types in " ^ operation)
+        fail_tc ("incompatible types in " ^ operation)
 ;;
 
 let tc_comparison = function
@@ -62,7 +59,7 @@ let tc_comparison = function
     | BoolT, BoolT     -> BoolT
     | CharT, CharT     -> BoolT
     | StringT, StringT -> BoolT
-    | _ -> fail_tc "Incompatible types for comparison"
+    | _ -> fail_tc "incompatible types for comparison"
 ;;
 
 let tc_binop binop left_type right_type =
@@ -95,6 +92,26 @@ let rec run_tc t_env = function
         let value_type = run_tc t_env value_expr in
         let t_env' = define_type name value_type t_env in
         run_tc t_env' body_expr
+    | Func _ ->  ClosureT (* For now skip function typechecking *)
+    | Apply (func_expr, _) -> 
+       (* The only "compile-time" type check we can do
+          currently is to check whether the left-side expression 
+          of the applicaiton is a `ClosureT` - a generic function type.
+
+          The `Interpreter.eval` function will help us out by improving type
+          safety with "run-time" checks.
+
+          For example if an expression is:
+            - ((x -> x + 1) 2)   , TC passes and `eval` correctly evalues 3
+            - ((x -> x + 1) 2.0) , TC passes BUT `eval` will throw a
+                                   "incompatible types for addition" Error
+            - ("text" 2) , TC fails : "Typechecker: tried to apply 'not-a-function'"
+          *)
+       let func_type = run_tc t_env func_expr in
+       begin match func_type with
+       | ClosureT -> ClosureT
+       | _ -> fail_tc "tried to apply 'not-a-function'"
+       end
     | UnOp (op, expr) ->
         let expr_type = run_tc t_env expr in
         tc_unop op expr_type 
@@ -109,9 +126,7 @@ let rec run_tc t_env = function
             begin match (test_type) with
             | BoolT -> 
                     if then_type = else_type then then_type
-                    else fail_tc "Types in both branches of `if` must match"
-            | _ -> fail_tc "Expected Bool in if (...)"
+                    else fail_tc "types in both branches of `if` must match"
+            | _ -> fail_tc "expected Bool in if (...)"
             end
-    | _ -> failwith "not implemented"
-  (*   | Func of string * expr *)
-  (*   | Apply of expr * expr *)
+;;
