@@ -39,3 +39,14 @@ true
 >>> if (3 > 2) then 4 else 5.2
 Error: Failure("Types in both branches of `if` must match")
 ```
+### Recursive functions
+```
+let rec factorial = x ->
+  if x <= 1 then 1
+  else x * factorial (x-1)
+in
+
+factorial 5
+```
+> This will evaluate to: `120`
+
