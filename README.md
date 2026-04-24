@@ -1,13 +1,43 @@
 # λynx
 > Functional programming language inspired by OCaml and Racket
 ### Functions
+###### factorial
 ```
->>> let add = x -> y -> x + y in
-    let square = x -> x*x in
-    let add_squares = x -> y -> (add (square x) (square y)) in
-    add_squares 3 4
-25
+let rec factorial = x ->
+  if x <= 1 then 1
+  else x * factorial (x-1)
+in
 
+factorial 5
+```
+> This will evaluate to: `120`
+###### fibonacci
+```
+let rec fib = n ->
+  if n <= 0 then 0
+  else if n == 1 then 1
+  else if n == 2 then 1
+  else fib (n-1) + fib (n-2)
+in
+
+fib 10
+```
+> This will evaluate to: `55`
+### Higher Order Functions
+```
+let apply_twice = func -> arg ->
+    func (func arg)
+in
+
+let incr_by_2 = n ->
+    (apply_twice (x -> x + 1) n)
+in
+
+incr_by_2 5
+```
+> This will evaluate to: `7`
+### Partial Applications
+```
 >>> ((x -> y -> ((x -> x*x) x + (x -> x*x) y)) 3 4)
 25
 
@@ -41,14 +71,3 @@ true
 >>> if (3 > 2) then 4 else 5.2
 Error: Failure("Types in both branches of `if` must match")
 ```
-### Recursive functions
-```
-let rec factorial = x ->
-  if x <= 1 then 1
-  else x * factorial (x-1)
-in
-
-factorial 5
-```
-> This will evaluate to: `120`
-

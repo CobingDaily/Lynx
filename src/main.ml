@@ -10,7 +10,7 @@ let interpret (filename: string) =
     let ast = parse filename in
     let result = Interp.interpret ast in
     print_endline filename;
-        print_endline ("=> " ^ result)
+    print_endline ("=> " ^ result);
   with e ->
     Printf.printf "Error: %s\n" (Printexc.to_string e)
 ;;
@@ -19,7 +19,7 @@ let files directory =
   Sys.readdir directory 
     |> Array.to_list
     |> List.map (fun name -> directory ^ "/" ^ name)
-
+;;
 
 let () = 
   List.iter (fun file -> interpret file) (files "examples")
