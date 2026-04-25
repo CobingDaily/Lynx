@@ -59,6 +59,17 @@ and lookup name env =
     | Some v -> v
 
 
+and string_of_value_list l =
+        let f acc item =
+          let sep = match acc with
+            | "" -> ""
+            | _  -> ", "
+          in
+          acc ^ sep ^ (string_of_value item)
+        in
+        let s = List.fold_left f "" l in
+        "[" ^ s ^ "]"
+
 and string_of_value = function
     | Int n -> Printf.sprintf "%i" n
     | Float n -> Printf.sprintf "%f" n
@@ -68,13 +79,8 @@ and string_of_value = function
     | Closure (param_name, body, env) ->
             let s = string_of_expr env body in
             Printf.sprintf "%s -> %s" param_name s
-    | List l ->
-        begin match l with
-        | [] -> ""
-        | hd :: tl -> (string_of_value hd) ^ ", " ^ (string_of_value (List tl))
-        end
-          
-        
+    | List l -> string_of_value_list l
+
 
 and string_of_expr env = function
     | Value v -> string_of_value v
