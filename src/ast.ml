@@ -137,12 +137,3 @@ and string_of_expr env = function
         let rest  = string_of_expr env rest_expr in
         Printf.sprintf "(%s :: %s)" first rest
 ;;
-
-
-(* let rec print_env = function
-    | [] -> ()
-    | scope :: rest -> 
-            let f = (fun n v -> Printf.printf "%s <-> %s\n" n (string_of_value v)) in
-            StringMap.iter f scope;
-            print_env rest
-*)
