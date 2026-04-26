@@ -38,6 +38,7 @@ and expr =
     | Func of string * expr            (* param name -> expr *)
     | Apply of expr * expr             (* function_expr argument_expr *)
     | ListExpr of expr list
+    | Cons of expr * expr              (* first_expr, rest_expr *)
 ;;
 
 let rec define name value = function
@@ -131,6 +132,10 @@ and string_of_expr env = function
             let f = string_of_expr env function_expr in
             let x = string_of_expr env argument_expr in
             Printf.sprintf "(%s %s)" f x
+    | Cons (first_expr, rest_expr) ->
+        let first = string_of_expr env first_expr in
+        let rest  = string_of_expr env rest_expr in
+        Printf.sprintf "(%s :: %s)" first rest
 ;;
 
 

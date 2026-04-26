@@ -11,7 +11,7 @@
 %token <string> IDENT
 %token PLUS MINUS TIMES OVER
 %token LPAREN RPAREN
-%token LBRACKET RBRACKET COMMA
+%token LBRACKET RBRACKET COMMA CONS
 %token EQEQ GT LT GE LE
 %token RARROW PIPE COMPOSE
 %token LET REC EQUALS IN
@@ -24,7 +24,7 @@ main:
     | e = expr; EOF { e }
 
 expr:
-    | e = pipe_expr { e }
+    | e = cons_expr { e }
     | p = IDENT; RARROW; right = expr
         { Func (p, right) }
     | LET; name = IDENT; EQUALS; value = expr; IN; body = expr
@@ -33,6 +33,11 @@ expr:
         { LetRec (name, value, body) }
     | IF; cond = expr; THEN; then_expr = expr; ELSE; other_expr = expr
         { IfElse (cond, then_expr, other_expr) }
+
+cons_expr:
+    | e = pipe_expr { e }
+    | first = pipe_expr; CONS; rest = cons_expr
+        { Cons (first, rest) }
 
 pipe_expr:
     | e = eq_expr { e }
@@ -63,9 +68,9 @@ add_expr:
 
 mul_expr:
     | e = compose_expr { e }
-    | left = mul_expr; TIMES; right = app_expr
+    | left = mul_expr; TIMES; right = compose_expr
         { BinOp (Mul, left, right) }
-    | left = mul_expr; OVER; right = app_expr
+    | left = mul_expr; OVER; right = compose_expr
         { BinOp (Div, left, right) }
 
 compose_expr:

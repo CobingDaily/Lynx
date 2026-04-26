@@ -104,6 +104,13 @@ and eval env = function
   | Var name -> lookup name env
   | ListExpr expr_list ->
       List (List.map (eval env) expr_list)
+  | Cons (first_expr, rest_expr) ->
+      let first_value = eval env first_expr in
+      let rest_value  = eval env rest_expr  in
+      begin match rest_value with
+      | List values -> List (first_value :: values)
+      | _ -> failwith "second operand is not a list"
+      end
   | Let (name, expr, body_expr) -> 
       let value = eval env expr in
       let env' = define name value env in

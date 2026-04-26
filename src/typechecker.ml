@@ -112,6 +112,16 @@ let tc_list = function
     else fail_tc "list items must be of same type"
 ;;
 
+let tc_cons first_type rest_type =
+  begin match rest_type with
+    | ListT (None) -> ListT (Some first_type)
+    | ListT (Some ty) ->
+        if first_type = ty then ListT (Some ty)
+        else fail_tc "in cons (::) left operand must match the type of list items"
+    | _ -> fail_tc "in cons (::) right operand must be a list"
+  end
+;;
+
 let rec run_tc t_env = function
     | Value v -> type_of_value v
     | Var name ->
@@ -122,6 +132,10 @@ let rec run_tc t_env = function
     | ListExpr expr_list ->
         let type_list = List.map (run_tc t_env) expr_list in
         tc_list type_list
+    | Cons (first_expr, rest_expr) ->
+        let first_type = run_tc t_env first_expr in
+        let rest_type  = run_tc t_env rest_expr  in
+        tc_cons first_type rest_type
     | Let (name, value_expr, body_expr) ->
         let value_type = run_tc t_env value_expr in
         let t_env' = define_type name value_type t_env in

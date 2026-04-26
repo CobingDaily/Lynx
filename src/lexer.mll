@@ -40,6 +40,7 @@ rule token = parse
     | "else"                        { ELSE }
     | "true"                        { BOOL (true) }
     | "false"                       { BOOL (false) }
+    | "::"                          { CONS }
     | alpha alphanum* as id         { IDENT id }
     | '+'                           { PLUS }
     | '-'                           { MINUS }
