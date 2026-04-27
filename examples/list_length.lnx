@@ -1,0 +1,5 @@
+let rec list_length = xs ->
+  if xs == [] then 0
+  else 1 + list_length (rest xs)
+in
+list_length [1, 2, 3, 4, 5]
