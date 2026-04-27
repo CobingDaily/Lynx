@@ -1,8 +1,7 @@
 let sum_list = xs ->
     let rec sum_list_aux = xs -> acc ->
-      if ((rest xs) == []) then (first xs) + acc
-      else
-        (sum_list_aux (rest xs) (acc + (first xs)))
+      if xs == [] then acc
+      else (sum_list_aux (rest xs) (acc + (first xs)))
     in
     sum_list_aux xs 0
 in
