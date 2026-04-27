@@ -42,6 +42,8 @@ rule token = parse
     | "true"                        { BOOL (true) }
     | "false"                       { BOOL (false) }
     | "::"                          { CONS }
+    | "first"                       { FIRST }
+    | "rest"                        { REST }
     | ident as id                   { IDENT id }
     | '+'                           { PLUS }
     | '-'                           { MINUS }

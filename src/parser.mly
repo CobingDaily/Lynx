@@ -12,6 +12,7 @@
 %token PLUS MINUS TIMES OVER
 %token LPAREN RPAREN
 %token LBRACKET RBRACKET COMMA CONS
+%token FIRST REST
 %token EQEQ GT LT GE LE
 %token RARROW PIPE COMPOSE
 %token LET REC EQUALS IN
@@ -38,6 +39,10 @@ cons_expr:
     | e = pipe_expr { e }
     | first = pipe_expr; CONS; rest = cons_expr
         { Cons (first, rest) }
+    | FIRST; xs = cons_expr
+        { First (xs) }
+    | REST; xs = cons_expr
+        { Rest (xs) }
 
 pipe_expr:
     | e = eq_expr { e }
