@@ -1,0 +1,8 @@
+let reverse = xs ->
+    let rec aux = xs -> acc ->
+        if xs == [] then acc
+        else aux (rest xs) ((first xs) :: acc)
+    in
+    aux xs []
+in
+reverse [1, 2, 3, 4, 5]
