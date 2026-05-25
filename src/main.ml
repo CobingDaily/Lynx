@@ -1,19 +1,4 @@
-
-let parse (filename: string) : Ast.expr =
-  let i_channel = open_in filename in
-  let lexbuf = Lexing.from_channel i_channel in
-  Parser.main Lexer.token lexbuf
-;;
-
-let interpret (filename: string) =
-  try
-    let ast = parse filename in
-    let result = Interp.interpret ast in
-    print_endline filename;
-    print_endline ("=> " ^ result);
-  with e ->
-    Printf.printf "Error: %s\n" (Printexc.to_string e)
-;;
+open Lynx
 
 let files directory = 
   Sys.readdir directory 
@@ -22,5 +7,5 @@ let files directory =
 ;;
 
 let () = 
-  List.iter (fun file -> interpret file) (files "examples")
+  List.iter (fun file -> interpret_file file) (files "examples")
 ;;
