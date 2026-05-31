@@ -25,12 +25,12 @@ let rec type_of_value = function
     | Bool _    -> BoolT
     | Char _    -> CharT
     | String _  -> StringT
-    | Closure _ -> ClosureT
     | List l    -> 
         begin match l with
         | []      -> ListT None
         | hd :: _ -> ListT (Some (type_of_value hd))
         end
+    | Closure _ -> fail_tc "unreachable"
 ;;
 
 let tc_equals = function
@@ -147,24 +147,17 @@ let rec run_tc t_env = function
         let value_type = run_tc !t_env_ref value_expr in
         t_env_ref := define_type name value_type !t_env_ref;
         run_tc !t_env_ref body_expr
-    | Func _ ->  ClosureT (* For now skip function typechecking *)
-    | Apply (func_expr, _) -> 
-       (* The only "compile-time" type check we can do
-          currently is to check whether the left-side expression 
-          of the applicaiton is a `ClosureT` - a generic function type.
-
-          The `Interpreter.eval` function will help us out by improving type
-          safety with "run-time" checks.
-
-          For example if an expression is:
-            - ((x -> x + 1) 2)   , TC passes and `eval` correctly evalues 3
-            - ((x -> x + 1) 2.0) , TC passes BUT `eval` will throw a
-                                   "incompatible types for addition" Error
-            - ("text" 2) , TC fails : "Typechecker: tried to apply 'not-a-function'"
-          *)
+    | Func (param_name, param_type, body_expr) ->
+        let t_env' = define_type param_name param_type t_env in
+        let return_type = run_tc t_env' body_expr in
+        FuncT (param_type, return_type)
+    | Apply (func_expr, arg_expr) -> 
        let func_type = run_tc t_env func_expr in
+       let arg_type = run_tc t_env arg_expr in 
        begin match func_type with
-       | ClosureT -> ClosureT
+       | FuncT (param_type, return_type) ->
+           if arg_type = param_type then return_type
+           else fail_tc "argument type does not match parameter type of the function"
        | _ -> fail_tc "tried to apply 'not-a-function'"
        end
     | UnOp (op, expr) ->

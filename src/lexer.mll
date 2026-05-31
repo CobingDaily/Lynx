@@ -55,5 +55,6 @@ rule token = parse
     | '['                           { LBRACKET }
     | ']'                           { RBRACKET }
     | ','                           { COMMA }
+    | ':'                           { COLON }
     | eof                           { EOF }
     | _ as c                        { failwith (Printf.sprintf "unknown character %c" c) }

@@ -35,7 +35,7 @@ and expr =
   | Let of string * expr * expr      (* variable name, value, body *)
   | LetRec of string * expr * expr   (* variable name, value, body *)
   | IfElse of expr * expr * expr     (* condition, then_expr, other_expr *)
-  | Func of string * expr            (* param name -> expr *)
+  | Func of string * type' * expr    (* param name, param type -> expr *)
   | Apply of expr * expr             (* function_expr argument_expr *)
   | ListExpr of expr list
   | Cons of expr * expr              (* first_expr, rest_expr *)
@@ -48,8 +48,8 @@ and type' =
   | BoolT
   | CharT
   | StringT
-  | ClosureT
   | ListT of type' option
+  | FuncT of type' * type'  (* arg type -> return type *)
 
 and type_env = type' StringMap.t list;;
 
@@ -135,7 +135,7 @@ and string_of_expr = function
             let then_s = string_of_expr then_expr in
             let other_s = string_of_expr other_expr in
             Printf.sprintf "(if %s then %s else %s)" condition then_s other_s
-    | Func (left, right) ->
+    | Func (left, _param_type, right) ->
             let right = string_of_expr right in
             Printf.sprintf "(%s -> %s)" left right
     | Apply (function_expr, argument_expr) ->

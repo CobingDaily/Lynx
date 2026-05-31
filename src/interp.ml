@@ -89,7 +89,7 @@ and eval env = function
       | _ -> ()
       end;
       eval !env_ref body_expr
-  | Func (param_name, body_expr) -> 
+  | Func (param_name, _param_type, body_expr) -> 
       let env_ref = ref env in
       Closure (param_name, body_expr, env_ref)
   | Apply (func_expr, arg_expr) -> 

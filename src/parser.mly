@@ -9,6 +9,7 @@
 %token <char> CHAR
 %token <string> STRING
 %token <string> IDENT
+
 %token PLUS MINUS TIMES OVER
 %token LPAREN RPAREN
 %token LBRACKET RBRACKET COMMA CONS
@@ -17,6 +18,7 @@
 %token RARROW PIPE COMPOSE
 %token LET REC EQUALS IN
 %token IF THEN ELSE
+%token COLON
 %token EOF
 
 %start <Ast.expr> main
@@ -24,10 +26,26 @@
 main:
     | e = expr; EOF { e }
 
+ty:
+    | a = ty_atom; RARROW; b = ty { FuncT(a, b) }
+    | a = ty_atom { a }
+
+ty_atom:
+    | name = IDENT
+        {match name with
+        | "Int"    -> IntT
+        | "Float"  -> FloatT
+        | "Bool"   -> BoolT
+        | "Char"   -> CharT
+        | "String" -> StringT
+        | other    -> failwith ("unknown type: " ^ other) }
+    | LBRACKET; t = ty; RBRACKET { ListT (Some t) }
+    | LPAREN; t = ty; RPAREN { t }
+
 expr:
     | e = cons_expr { e }
-    | p = IDENT; RARROW; right = expr
-        { Func (p, right) }
+    | LPAREN; p = IDENT; COLON; t = ty; RPAREN; RARROW; right = expr
+        { Func (p, t, right) }
     | LET; name = IDENT; EQUALS; value = expr; IN; body = expr
         { Let (name, value, body) }
     | LET; REC; name = IDENT; EQUALS; value = expr; IN; body = expr
@@ -96,10 +114,4 @@ atom_expr:
     | s = STRING    { Value (String s) }
     | x = IDENT     { Var x }
     | LPAREN; content = expr; RPAREN { content }
-    | LBRACKET; items = expr_list; RBRACKET { ListExpr items }
-
-expr_list:
-    | { [] }
-    | e = expr                          { [e] }
-    | e = expr; COMMA; rest = expr_list { e :: rest }
-
+    | LBRACKET; items = separated_list(COMMA, expr); RBRACKET { ListExpr items }
