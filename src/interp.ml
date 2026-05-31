@@ -86,10 +86,10 @@ let do_negate = function
 
 let is_true = function 
   | Bool false
-    | String ""
-    | Int 0
-    | Float 0.0 -> false
-    | _ -> true
+  | String ""
+  | Int 0
+  | Float 0.0 -> false
+  | _ -> true
 ;;
 
 let rec do_apply = function

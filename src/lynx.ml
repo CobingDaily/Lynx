@@ -5,12 +5,12 @@ let file_content_as_str filename =
 ;;
 
 let prelude_std src_code =
-  let prelude_files = Sys.readdir "std" 
+  let prelude_file_names = Sys.readdir "std" 
     |> Array.to_list
     |> List.map (fun name -> "std" ^ "/" ^ name)
   in
   let std_src =
-    let file_sources = List.map (file_content_as_str) prelude_files in
+    let file_sources = List.map (file_content_as_str) prelude_file_names in
     List.fold_right (fun file_str acc -> acc ^ "\n" ^ file_str) file_sources ""
   in
   std_src ^ "\n" ^ src_code

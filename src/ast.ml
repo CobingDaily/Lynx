@@ -3,45 +3,56 @@ module StringMap = Map.Make(String)
 type env = value StringMap.t list 
 
 and unop =
-    | UnaryMinus
+  | UnaryMinus
 
 and binop = 
-    | Add
-    | Sub
-    | Mul
-    | Div
-    | Equals
-    | GreaterThan
-    | LessThan
-    | GreaterEqual
-    | LessEqual
+  | Add
+  | Sub
+  | Mul
+  | Div
+  | Equals
+  | GreaterThan
+  | LessThan
+  | GreaterEqual
+  | LessEqual
 
 and value =
-    | Int of int
-    | Float of float
-    | Bool of bool
-    | Char of char
-    | String of string
-    | Closure of string * expr * env ref (* (param, body, mutable env)
-                                            Mutable env for tying the
-                                            recursive knot in letrec. *)
-    | List of value list
+  | Int of int
+  | Float of float
+  | Bool of bool
+  | Char of char
+  | String of string
+  | Closure of string * expr * env ref (* (param, body, mutable env)
+                                          Mutable env for tying the
+                                          recursive knot in letrec. *)
+  | List of value list
 
 and expr =
-    | Value of value
-    | BinOp of binop * expr * expr     (* op, left, right *)
-    | UnOp of unop * expr              (* op, expr *)
-    | Var of string                    (* variable name *)
-    | Let of string * expr * expr      (* variable name, value, body *)
-    | LetRec of string * expr * expr   (* variable name, value, body *)
-    | IfElse of expr * expr * expr     (* condition, then_expr, other_expr *)
-    | Func of string * expr            (* param name -> expr *)
-    | Apply of expr * expr             (* function_expr argument_expr *)
-    | ListExpr of expr list
-    | Cons of expr * expr              (* first_expr, rest_expr *)
-    | First of expr                    (* list_expr *)
-    | Rest of expr                     (* list_expr *)
-;;
+  | Value of value
+  | BinOp of binop * expr * expr     (* op, left, right *)
+  | UnOp of unop * expr              (* op, expr *)
+  | Var of string                    (* variable name *)
+  | Let of string * expr * expr      (* variable name, value, body *)
+  | LetRec of string * expr * expr   (* variable name, value, body *)
+  | IfElse of expr * expr * expr     (* condition, then_expr, other_expr *)
+  | Func of string * expr            (* param name -> expr *)
+  | Apply of expr * expr             (* function_expr argument_expr *)
+  | ListExpr of expr list
+  | Cons of expr * expr              (* first_expr, rest_expr *)
+  | First of expr                    (* list_expr *)
+  | Rest of expr                     (* list_expr *)
+
+and type' =
+  | IntT
+  | FloatT
+  | BoolT
+  | CharT
+  | StringT
+  | ClosureT
+  | ListT of type' option
+
+and type_env = type' StringMap.t list;;
+
 
 let rec define name value = function
     | [] -> failwith "no scope"

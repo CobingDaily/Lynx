@@ -3,17 +3,6 @@ module StringMap = Map.Make(String)
 
 let fail_tc message = failwith ("Typechecker: " ^ message)
 
-type type' =
-    | IntT
-    | FloatT
-    | BoolT
-    | CharT
-    | StringT
-    | ClosureT
-    | ListT of type' option
-
-and type_env = type' StringMap.t list  
-
 let empty_type_env: type_env = [StringMap.empty]
 
 let define_type name (t : type') = function
