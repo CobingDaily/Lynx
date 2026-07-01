@@ -1,4 +1,5 @@
 _build/
+_opam/
 parser.
 parser.conflicts
 .DS_Store

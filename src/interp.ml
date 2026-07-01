@@ -32,49 +32,13 @@ let do_div = function
     | _ -> failwith "incompatible types for division"
 ;;
 
-let are_values_equal = function
-  | Int a, Int b       -> Bool (a = b)
-  | Float a, Float b   -> Bool (a = b)
-  | Bool a, Bool b     -> Bool (a = b)
-  | Char a, Char b     -> Bool (a = b)
-  | String a, String b -> Bool (a = b)
-  | List a, List b     -> Bool (a = b)
-  | _ -> failwith "incompatible types for comparison"
-;;
-
-let is_greater_than = function
-  | Int a, Int b       -> Bool (a > b)
-  | Float a, Float b   -> Bool (a > b)
-  | Bool a, Bool b     -> Bool (a > b)
-  | Char a, Char b     -> Bool (a > b)
-  | String a, String b -> Bool (a > b)
-  | _ -> failwith "incompatible types for comparison"
-;;
-
-let is_less_than = function
-  | Int a, Int b       -> Bool (a < b)
-  | Float a, Float b   -> Bool (a < b)
-  | Bool a, Bool b     -> Bool (a < b)
-  | Char a, Char b     -> Bool (a < b)
-  | String a, String b -> Bool (a < b)
-  | _ -> failwith "incompatible types for comparison"
-;;
-
-let is_greater_equal = function
-  | Int a, Int b       -> Bool (a >= b)
-  | Float a, Float b   -> Bool (a >= b)
-  | Bool a, Bool b     -> Bool (a >= b)
-  | Char a, Char b     -> Bool (a >= b)
-  | String a, String b -> Bool (a >= b)
-  | _ -> failwith "incompatible types for comparison"
-;;
-
-let is_less_equal = function
-  | Int a, Int b       -> Bool (a <= b)
-  | Float a, Float b   -> Bool (a <= b)
-  | Bool a, Bool b     -> Bool (a <= b)
-  | Char a, Char b     -> Bool (a <= b)
-  | String a, String b -> Bool (a <= b)
+let are_values_equal (operator: 'a. 'a -> 'a -> bool) = function
+  | Int a, Int b       -> Bool (operator a b)
+  | Float a, Float b   -> Bool (operator a b)
+  | Bool a, Bool b     -> Bool (operator a b)
+  | Char a, Char b     -> Bool (operator a b)
+  | String a, String b -> Bool (operator a b)
+  | List a, List b     -> Bool (operator a b)
   | _ -> failwith "incompatible types for comparison"
 ;;
 
@@ -148,11 +112,11 @@ and eval env = function
            | Sub    -> do_sub 
            | Mul    -> do_mul 
            | Div    -> do_div 
-           | Equals       -> are_values_equal
-           | GreaterThan  -> is_greater_than
-           | LessThan     -> is_less_than
-           | GreaterEqual -> is_greater_equal
-           | LessEqual    -> is_less_equal
+           | Equals       -> are_values_equal ( = )
+           | GreaterThan  -> are_values_equal ( > )
+           | LessThan     -> are_values_equal ( < ) 
+           | GreaterEqual -> are_values_equal ( >= ) 
+           | LessEqual    -> are_values_equal ( <= ) 
       end in
       do_binop (left_value, right_value)
   | First (list_expr) ->
