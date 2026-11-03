@@ -93,7 +93,7 @@ let tc_binop binop left_type right_type =
   | LessThan     -> tc_comparison 
   | GreaterEqual -> tc_comparison 
   | LessEqual    -> tc_comparison 
-  end @@ (left_type, right_type)
+  end (left_type, right_type)
 ;;
 
 let tc_unop op expr_type =
