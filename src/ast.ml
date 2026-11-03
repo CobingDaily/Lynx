@@ -1,11 +1,11 @@
 module StringMap = Map.Make(String)
 
-type env = value StringMap.t list 
 
-and unop =
+type unop =
   | UnaryMinus
+;;
 
-and binop = 
+type binop = 
   | Add
   | Sub
   | Mul
@@ -15,6 +15,21 @@ and binop =
   | LessThan
   | GreaterEqual
   | LessEqual
+;;
+
+type type' =
+  | IntT
+  | FloatT
+  | BoolT
+  | CharT
+  | StringT
+  | ClosureT
+  | ListT of type' option
+;;
+
+type type_env = type' StringMap.t list;;
+
+type env = value StringMap.t list 
 
 and value =
   | Int of int
@@ -41,17 +56,6 @@ and expr =
   | Cons of expr * expr              (* first_expr, rest_expr *)
   | First of expr                    (* list_expr *)
   | Rest of expr                     (* list_expr *)
-
-and type' =
-  | IntT
-  | FloatT
-  | BoolT
-  | CharT
-  | StringT
-  | ClosureT
-  | ListT of type' option
-
-and type_env = type' StringMap.t list;;
 
 
 let rec define name value = function
